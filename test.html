@@ -1,0 +1,297 @@
+
+
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" crossorigin="anonymous"></script>
+
+  <script type="text/javascript" src="https://cdn.datatables.net/s/dt/dt-1.10.10,b-1.1.0/datatables.min.js"></script>
+  <script type="text/javascript" src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+
+
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/s/dt/dt-1.10.10,b-1.1.0/datatables.min.css"/>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" crossorigin="anonymous"/>
+  
+</head>
+<body>
+
+  <div id='buttonContainer'>
+    <button id="add" data-toggle="modal" data-target="#addModal">Add Golfer</button>
+    <br>
+    <button id="edit">Edit Golfer</button>
+    <br>
+    <button id="delete">Delete Golfer</button>
+    <br>
+  </div>
+
+
+  
+  <div class="container">
+    <table id="golfTable" class="display" cellspacing="0">
+      <thead>
+        <tr>
+            <th>Name</th>
+            <th>Quota 1</th>
+            <th>Quota 2</th>
+            <th>Quota 3</th>
+            <th>Quota 4</th>
+            <th>Quota 5</th>
+            <th>Quota 6</th>
+            <th>Average Quota</th>
+        </tr>
+      </thead>
+      <!--<tfoot>
+        <tr>
+            <th>Name</th>
+            <th>Quota 1</th>
+            <th>Quota 2</th>
+            <th>Quota 3</th>
+            <th>Quota 4</th>
+            <th>Quota 5</th>
+            <th>Quota 6</th>
+            <th>Average Quota</th>
+        </tr>
+      </tfoot>-->
+      <tbody id="tableBody">
+        <tr>
+            <td>Brent Besase</td>
+            <td>5</td>
+            <td>5</td>
+            <td>5</td>
+            <td>5</td>
+            <td>5</td>
+            <td>5</td>
+            <td>5</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <div id="addModal" class="modal fade" tabindex="-1" role="dialog" style="display:none;">
+   
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Add Golfer</h4>
+          </div>
+          <div class="modal-body">
+          <label for='golferFirstName'>Golfers First Name</label><br>
+            <input type="text" class="form-control" id="golferFirstName" placeholder="First Name"></input>
+            <hr class='hr'>
+            <label for='golferLastName'>Golfers Last Name</label><br>
+            <input type="text" class="form-control" id="golferLastName" placeholder="Last Name"></input>
+            <hr class='hr'>
+            <div id='quotaTopRow'>
+              <input type="number" class='quotaInputs form-control' placeholder="Round 1" id="quota1" min='0'>
+              <input type="number" class='quotaInputs form-control' placeholder="Round 2" id="quota2" min='0'>
+              <input type="number" class='quotaInputs form-control' placeholder="Round 3" id="quota3" min='0'>
+            </div>
+            <hrclass='hr'>
+            <div id='quotaBottomRow'>
+              <input type="number" class='quotaInputs form-control' placeholder="Round 4" id="quota4" min='0'>
+              <input type="number" class='quotaInputs form-control' placeholder="Round 5" id="quota5" min='0'>
+              <input type="number" class='quotaInputs form-control' placeholder="Round 6" id="quota6" min='0'>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default addButtons" data-dismiss="modal">Close</button>
+            <button type="button" id='addSave' class="btn btn-primary addButtons">Save changes</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+   
+  </div>
+
+</body>
+</html>
+
+
+
+<style>
+
+.container{
+  position: absolute;
+  left: 33%;
+  top: 25%;
+  bottom: 25%;
+}
+
+#buttonContainer{
+  margin-top: 15%;
+  margin-left: 15%;
+}
+
+#add{
+  width: 7%;
+  border-radius: 10px;
+  background-color: green;
+  color: white;
+  
+  height: 9%;
+
+}
+
+#add:hover{
+  background-color: white;
+  color: green;
+}
+
+#edit{
+  width: 7%;
+  border-radius: 10px;
+  background-color: orange;
+  color: white;
+  
+  height: 9%;
+
+}
+
+#edit:hover{
+  background-color: white;
+  color: orange;
+}
+
+#delete{
+  width: 7%;
+  border-radius: 10px;
+  background-color: red;
+  color: white;
+  height: 9%;
+
+}
+
+#delete:hover{
+  background-color: white;
+  color: red;
+}
+
+.quotaInputs{
+  width: 25%;
+  display: inline;
+}
+
+#quotaTopRow{
+  margin-left: 15%;
+
+}
+
+#quotaBottomRow{
+  margin-left: 15%;
+
+}
+
+.addButtons{
+  width: 25%;
+}
+
+.hr{
+  height: 1px;
+}
+
+
+
+</style>
+
+<script language="javascript">
+  $(document).ready(function(){
+
+    //make the connection to the firebase app online
+    var myData = new Firebase('https://golf-quota.firebaseIO.com/web/data/golf-quota/Dave/Name');
+   
+    //on page load gets the child data, and everything else under it. 
+    myData.once('value', function(snapshot){
+      snapshot.forEach(function(childSnapshot){
+
+          var key = childSnapshot.key();
+          var childData = childSnapshot.val();
+          createTable(childSnapshot.val());
+      });
+    });
+    
+
+    var golferData = [];
+    //test function to add data to firebase
+    //setData(myData);
+
+    //sets up the table so you can see data
+    $('#golfTable').DataTable();
+
+    //Jquery button click handler for when the Add button is clicked
+    $('#addSave').click(function(){
+      getAddInputs();
+    });
+  
+
+    function setData(data){
+
+      data.set({
+        Dave: {
+          Name: 'Dave',
+          Score1: 8,
+          Score2: 8,
+          Score3: 8,
+          Score4: 22,
+          Score5: 12,
+          Score6: 20,
+          AverageQuota: 8
+        }
+      });
+    }
+
+    function getAddInputs(){
+      //function gets all of the user inputted value from the addModal
+      var firstName = $('#golferFirstName').val();
+      var lastName  = $('#golferLastName').val();
+      var fullName  = firstName + lastName;
+      var quota1    = Number($('#quota1').val());
+      var quota2    = Number($('#quota2').val());
+      var quota3    = Number($('#quota3').val());
+      var quota4    = Number($('#quota4').val());
+      var quota5    = Number($('#quota5').val());
+      var quota6    = Number($('#quota6').val());
+      var avgQuta   = (quota1 + quota2 + quota3 + quota4 + quota5 + quota6) / 6;
+
+      golferData.push({
+          'Name'         : fullName,
+          'Score1'       : quota1,
+          'Score2'       : quota2,
+          'Score3'       : quota3,
+          'Score4'       : quota4,
+          'Score5'       : quota5,
+          'Score6'       : quota6,
+          'AverageQuota' : avgQuta
+      });
+
+      //convert the array to JSON 
+      var jsonData = JSON.stringify(golferData); 
+
+      //from here send the jsonData to the firebase with eithe set() or push() ((not sure yet))
+    }
+
+
+    function createTable(snap){
+
+      if(snap != undefined){
+
+          $('#tableBody').append(
+            '<tr>' +
+              '<td>' + snap.Name + '</td>' +
+              '<td>' + snap.Score1 + '</td>' + 
+              '<td>' + snap.Score2 + '</td>' +
+              '<td>' + snap.Score3 + '</td>' +
+              '<td>' + snap.Score4 + '</td>' +
+              '<td>' + snap.Score5 + '</td>' +
+              '<td>' + snap.Score6 + '</td>' +
+              '<td>' + snap.AverageQuota + '</td>' +
+        '</tr>');
+      }
+    }
+
+  });
+</script>
