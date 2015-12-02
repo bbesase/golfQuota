@@ -18,16 +18,7 @@
 </head>
 <body>
 
-  <div id='buttonContainer'>
-    <button id="add" data-toggle="modal" data-target="#golfModal">Add Golfer</button>
-    <br>
-    <button id="addScore" data-toggle="modal" data-target="#golfModal">Add Score</button>
-    <br>
-    <button id="edit" data-toggle="modal" data-target="#golfModal">Edit Golfer</button>
-    <br>
-    <button id="delete">Delete Golfer</button>
-    <br>
-  </div>
+  
 
 
   
@@ -70,6 +61,17 @@
         </tr>
       </tbody>
     </table>
+  </div>
+
+  <div id='buttonContainer'>
+    <button id="add" data-toggle="modal" data-target="#golfModal">Add Golfer</button>
+    <br>
+    <button id="addScore" data-toggle="modal" data-target="#golfModal">Add Score</button>
+    <br>
+    <button id="edit" data-toggle="modal" data-target="#golfModal">Edit Golfer</button>
+    <br>
+    <button id="delete">Delete Golfer</button>
+    <br>
   </div>
 
 
@@ -118,10 +120,11 @@
 <style>
 
 .container{
-  position: absolute;
+  /*position: absolute;
   left: 33%;
   top: 25%;
-  bottom: 25%;
+  bottom: 25%;*/
+  margin-top: 5%;
 }
 
 #buttonContainer{
@@ -132,7 +135,7 @@
 #add{
   width: 7%;
   border-radius: 10px;
-  background-color: green;
+  background-color: #76FF03;
   color: white;
   
   height: 9%;
@@ -141,13 +144,13 @@
 
 #add:hover{
   background-color: white;
-  color: green;
+  color: #76FF03;
 }
 
 #addScore{
   width: 7%;
   border-radius: 10px;
-  background-color: blue;
+  background-color: #03A9F4;
   color: white;
   
   height: 9%;
@@ -156,13 +159,13 @@
 
 #addScore:hover{
   background-color: white;
-  color: blue;
+  color: #03A9F4;
 }
 
 #edit{
   width: 7%;
   border-radius: 10px;
-  background-color: orange;
+  background-color: #FB8C00;
   color: white;
   
   height: 9%;
@@ -171,13 +174,13 @@
 
 #edit:hover{
   background-color: white;
-  color: orange;
+  color: #FB8C00;
 }
 
 #delete{
   width: 7%;
   border-radius: 10px;
-  background-color: red;
+  background-color: #F44336;
   color: white;
   height: 9%;
 
@@ -185,7 +188,7 @@
 
 #delete:hover{
   background-color: white;
-  color: red;
+  color: #F44336;
 }
 
 .quotaInputs{
