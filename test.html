@@ -19,9 +19,11 @@
 <body>
 
   <div id='buttonContainer'>
-    <button id="add" data-toggle="modal" data-target="#addModal">Add Golfer</button>
+    <button id="add" data-toggle="modal" data-target="#golfModal">Add Golfer</button>
     <br>
-    <button id="edit">Edit Golfer</button>
+    <button id="addScore" data-toggle="modal" data-target="#golfModal">Add Score</button>
+    <br>
+    <button id="edit" data-toggle="modal" data-target="#golfModal">Edit Golfer</button>
     <br>
     <button id="delete">Delete Golfer</button>
     <br>
@@ -71,7 +73,7 @@
   </div>
 
 
-  <div id="addModal" class="modal fade" tabindex="-1" role="dialog" style="display:none;">
+  <div id="golfModal" class="modal fade" tabindex="-1" role="dialog" style="display:none;">
    
       <div class="modal-dialog">
         <div class="modal-content">
@@ -142,6 +144,21 @@
   color: green;
 }
 
+#addScore{
+  width: 7%;
+  border-radius: 10px;
+  background-color: blue;
+  color: white;
+  
+  height: 9%;
+
+}
+
+#addScore:hover{
+  background-color: white;
+  color: blue;
+}
+
 #edit{
   width: 7%;
   border-radius: 10px;
@@ -202,7 +219,7 @@
   $(document).ready(function(){
 
     //make the connection to the firebase app online
-    var myData = new Firebase('https://golf-quota.firebaseIO.com/web/data/golf-quota/Dave/Name');
+    var myData = new Firebase('https://golf-quota.firebaseIO.com/');
    
     //on page load gets the child data, and everything else under it. 
     myData.once('value', function(snapshot){
@@ -213,67 +230,6 @@
           createTable(childSnapshot.val());
       });
     });
-    
-
-    var golferData = [];
-    //test function to add data to firebase
-    //setData(myData);
-
-    //sets up the table so you can see data
-    $('#golfTable').DataTable();
-
-    //Jquery button click handler for when the Add button is clicked
-    $('#addSave').click(function(){
-      getAddInputs();
-    });
-  
-
-    function setData(data){
-
-      data.set({
-        Dave: {
-          Name: 'Dave',
-          Score1: 8,
-          Score2: 8,
-          Score3: 8,
-          Score4: 22,
-          Score5: 12,
-          Score6: 20,
-          AverageQuota: 8
-        }
-      });
-    }
-
-    function getAddInputs(){
-      //function gets all of the user inputted value from the addModal
-      var firstName = $('#golferFirstName').val();
-      var lastName  = $('#golferLastName').val();
-      var fullName  = firstName + lastName;
-      var quota1    = Number($('#quota1').val());
-      var quota2    = Number($('#quota2').val());
-      var quota3    = Number($('#quota3').val());
-      var quota4    = Number($('#quota4').val());
-      var quota5    = Number($('#quota5').val());
-      var quota6    = Number($('#quota6').val());
-      var avgQuta   = (quota1 + quota2 + quota3 + quota4 + quota5 + quota6) / 6;
-
-      golferData.push({
-          'Name'         : fullName,
-          'Score1'       : quota1,
-          'Score2'       : quota2,
-          'Score3'       : quota3,
-          'Score4'       : quota4,
-          'Score5'       : quota5,
-          'Score6'       : quota6,
-          'AverageQuota' : avgQuta
-      });
-
-      //convert the array to JSON 
-      var jsonData = JSON.stringify(golferData); 
-
-      //from here send the jsonData to the firebase with eithe set() or push() ((not sure yet))
-    }
-
 
     function createTable(snap){
 
@@ -292,6 +248,163 @@
         '</tr>');
       }
     }
+    
+
+    var golferData = [];
+    //this will be used to keep track whether or not the user selected add, edit, delete, etc...
+    var status = 0;
+    var table = $('#golfTable').DataTable();
+    //test function to add data to firebase
+    //setData(myData);
+
+    //sets up the table so you can see data
+    $('#golfTable').DataTable();
+
+    $('#golfTable').on( 'click', 'tr', function () {
+      console.log( table.row( this ).data() );
+        if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    } );
+
+
+
+
+    $('#golfModal').on('hidden.bs.modal', function (e) {
+      $(this)
+        .find("input,textarea,select")
+           .val('')
+           .end()
+        .find("input[type=checkbox], input[type=radio]")
+           .prop("checked", "")
+           .end();
+    })
+
+    $('#golfModal').on('shown.bs.modal', function () {
+      //$('#myInput').focus()
+      console.log("HI");
+      modalLogic(status);
+    })
+
+    //Jquery button click handler for when the Add button is clicked
+    $('#addSave').click(function(){
+      //status = 1;
+      setData(myData, getAddInputs());
+      $('#golfModal').modal('hide');
+    });
+  
+    $('#add').click(function(){
+      status = 1;
+    });
+
+    $('#addScore').click(function(){
+      status = 2;
+    });
+
+    $('#edit').click(function(){
+      status = 3;
+    });
+
+    // $('#delete').click(function(){
+    //   status = 3;
+    // });
+
+    function setData(table, data){
+
+      if(status === 1){
+        var name = data[0].Name;
+        table.push({
+           //name: {
+            Name: data[0].Name,
+            Score1: data[0].Score1,
+            Score2: data[0].Score2,
+            Score3: data[0].Score3,
+            Score4: data[0].Score4,
+            Score5: data[0].Score5,
+            Score6: data[0].Score6,
+            AverageQuota: data[0].AverageQuota
+          //}
+        });
+
+        status = 0;
+      }
+      else if(status === 2){
+        //firebase code to add score
+        status = 0;
+      }
+      else if(status === 3){
+        //firebase code edit/update
+        status = 0;
+      }
+      
+    }
+
+    function getAddInputs(){
+      //function gets all of the user inputted value from the addModal
+      var firstName = $('#golferFirstName').val();
+      var lastName  = $('#golferLastName').val();
+      var fullName  = firstName + ' ' + lastName;
+      var quota1    = Number($('#quota1').val());
+      var quota2    = Number($('#quota2').val());
+      var quota3    = Number($('#quota3').val());
+      var quota4    = Number($('#quota4').val());
+      var quota5    = Number($('#quota5').val());
+      var quota6    = Number($('#quota6').val());
+      var avgQuta   = (quota1 + quota2 + quota3 + quota4 + quota5 + quota6) / 6;
+
+      golferData.push({
+
+          Name         : fullName,
+          Score1       : quota1,
+          Score2       : quota2,
+          Score3       : quota3,
+          Score4       : quota4,
+          Score5       : quota5,
+          Score6       : quota6,
+          AverageQuota : avgQuta
+      });
+
+      return golferData;
+
+      //convert the array to JSON 
+      //var jsonData = JSON.stringify(golferData); 
+
+      //from here send the jsonData to the firebase with eithe set() or push() ((not sure yet))
+      // myData.push({
+      //   fullName: {
+      //     Name         : fullName,
+      //     Score1       : quota1,
+      //     Score2       : quota2,
+      //     Score3       : quota3,
+      //     Score4       : quota4,
+      //     Score5       : quota5,
+      //     Score6       : quota6,
+      //     AverageQuota : avgQuta
+      //   }
+      // });
+      
+    }
+
+    function modalLogic(modalStatus){
+      if(status === 1){
+        //code to config logic with status == add
+      }
+      else if(status === 2){
+        //code to config logic with status == add score
+          //first name, last name, score2-avg blacked out
+      }
+      else if(status === 3){
+        //code to config logic with status == edit
+      }
+
+    }
+
+
+    
 
   });
 </script>
