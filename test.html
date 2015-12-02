@@ -64,9 +64,10 @@
   </div>
 
   <div id='buttonContainer'>
+
     <button id="add" data-toggle="modal" data-target="#golfModal">Add Golfer</button>
     <br>
-    <button id="addScore" data-toggle="modal" data-target="#golfModal">Add Score</button>
+    <button id="addScore" data-toggle="modal" >Add Score</button>
     <br>
     <button id="edit" data-toggle="modal" data-target="#golfModal">Edit Golfer</button>
     <br>
@@ -131,6 +132,24 @@
    
   </div>
 
+  <div id="errorModal" class="modal fade" tabindex="-1" role="dialog" style="display:none;">
+   
+      <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Error</h4>
+            </div>
+            <div class="modal-body">
+                <h4 class="modal-title">Please Make Sure You Have A Golfer Selected In The Table!</h4>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-danger btn-ok" id='ok' data-dismiss="modal">Ok</a>
+            </div>
+        </div>
+    </div>
+   
+  </div>
+
 </body>
 </html>
 
@@ -147,8 +166,9 @@
 }
 
 #buttonContainer{
-  margin-top: 15%;
-  margin-left: 15%;
+  /*margin-top: 15%;
+  margin-left: 15%;*/
+  overflow: hidden;
 }
 
 #add{
@@ -271,31 +291,67 @@
       }
     }
     
+    //create an array to store the golfer data
+    var golferData = [],
+        editData   = [];
 
-    var golferData = [];
     //this will be used to keep track whether or not the user selected add, edit, delete, etc...
     var status = 0;
+
+    //Sets a variable = to the table data
     var table = $('#golfTable').DataTable();
-    //test function to add data to firebase
-    //setData(myData);
+    
 
     //sets up the table so you can see data
     $('#golfTable').DataTable();
 
+    //runs when you click a row in the table
     $('#golfTable').on( 'click', 'tr', function () {
+
+      //clear out the editData array
+      editData = [];
+
+      if(this.children[0].innerHTML === ''){
+        editData = undefined;
+      }
+      editData.push({
+
+          Name         : this.children[0].innerHTML,
+          Score1       : this.children[1].innerHTML,
+          Score2       : this.children[2].innerHTML,
+          Score3       : this.children[3].innerHTML,
+          Score4       : this.children[4].innerHTML,
+          Score5       : this.children[5].innerHTML,
+          Score6       : this.children[6].innerHTML,
+          AverageQuota : this.children[7].innerHTML
+      });
+
       console.log( table.row( this ).data() );
-        if ( $(this).hasClass('selected') ) {
+      
+      //loops through each row when you click a row
+      $('#golfTable tr').each(function(){
+
+        //if the row (this) has the selected class attached to it...
+          if ( $(this).hasClass('selected') ){
+
+            //remove the selected class so it becomes un-highlighted
             $(this).removeClass('selected');
-        }
-        else {
-            table.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-        }
-    } );
+          }
+          
+
+      });
+
+      //Adds the selected class to the row which highlights it
+      $(this).addClass('selected');
+        
+
+    });
+
+    
 
 
-
-
+    //runs when the modal gets closed
+      //searches modal for all possible inputs and clears them out
     $('#golfModal').on('hidden.bs.modal', function (e) {
       $(this)
         .find("input,textarea,select")
@@ -306,6 +362,7 @@
            .end();
     })
 
+    //runs when ever the modal gets shown
     $('#golfModal').on('shown.bs.modal', function () {
       //$('#myInput').focus()
       console.log("HI");
@@ -314,32 +371,40 @@
 
     //Jquery button click handler for when the Add button is clicked
     $('#addSave').click(function(){
-      //status = 1;
-      setData(myData, getAddInputs());
+      
+      setData(status, myData, getAddInputs());
       $('#golfModal').modal('hide');
     });
   
+    //Runs when the add button is clicked
     $('#add').click(function(){
       status = 1;
     });
 
+    //Runs when the Add Score button is clicked
     $('#addScore').click(function(){
       status = 2;
+      if(editData.length == 0 || editData === undefined || editData === ''){
+          $('#errorModal').modal('show');
+      }
+      else{
+          $('#golfModal').modal('show');
+          modalLogic(status);
+      }
     });
 
+    //Runs when the Edit button is clicked
     $('#edit').click(function(){
       status = 3;
     });
 
-    // $('#delete').click(function(){
-    //   status = 3;
-    // });
+    
+    function setData(modalStatus, table, data){
 
-    function setData(table, data){
-
-      if(status === 1){
+      if(modalStatus === 1){
         var name = data[0].Name;
-        table.push({
+        var ref = table.push(name);
+        ref.set({
            //name: {
             Name: data[0].Name,
             Score1: data[0].Score1,
@@ -354,11 +419,11 @@
 
         status = 0;
       }
-      else if(status === 2){
+      else if(modalStatus === 2){
         //firebase code to add score
         status = 0;
       }
-      else if(status === 3){
+      else if(modalStatus === 3){
         //firebase code edit/update
         status = 0;
       }
@@ -412,14 +477,43 @@
     }
 
     function modalLogic(modalStatus){
-      if(status === 1){
+      if(modalStatus === 1){
         //code to config logic with status == add
       }
-      else if(status === 2){
+      else if(modalStatus === 2){
         //code to config logic with status == add score
           //first name, last name, score2-avg blacked out
+          $('#quota1').focus();
+
+          //Make all inputs except quota 1 (newest score) readonly
+          $('#golferFirstName').prop('readonly', true);
+          $('#golferLastName').prop('readonly', true);
+          $('#quota2').prop('readonly', true);
+          $('#quota3').prop('readonly', true);
+          $('#quota4').prop('readonly', true);
+          $('#quota5').prop('readonly', true);
+          $('#quota6').prop('readonly', true);
+
+          //split the fullname into first and last name
+          var editName = editData[0].Name,
+              fname    = editName.split(' ')[0],
+              lname    = editName.split(' ')[1];
+
+          //Move all of the scores to the next input area
+          $('#quota2').val(editData[0].Score1);
+          $('#quota3').val(editData[0].Score2);
+          $('#quota4').val(editData[0].Score3);
+          $('#quota5').val(editData[0].Score4);
+          $('#quota6').val(editData[0].Score5);
+          $('#golferFirstName').val(fname);
+          $('#golferLastName').val(lname);
+
+
+
+
+
       }
-      else if(status === 3){
+      else if(modalStatus === 3){
         //code to config logic with status == edit
       }
 
