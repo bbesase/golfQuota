@@ -157,7 +157,6 @@
 </html>
 
 
-
 <style>
 
 .container{
@@ -166,6 +165,7 @@
   top: 25%;
   bottom: 25%;*/
   margin-top: 5%;
+  width: 75%;
 }
 
 #buttonContainer{
@@ -261,6 +261,7 @@
 
 
 
+
 </style>
 
 <script language="javascript">
@@ -295,17 +296,29 @@
 
       if(snap != undefined){
 
-          $('#tableBody').append(
-            '<tr>' +
-              '<td>' + snap.Name + '</td>' +
-              '<td>' + snap.Score1 + '</td>' + 
-              '<td>' + snap.Score2 + '</td>' +
-              '<td>' + snap.Score3 + '</td>' +
-              '<td>' + snap.Score4 + '</td>' +
-              '<td>' + snap.Score5 + '</td>' +
-              '<td>' + snap.Score6 + '</td>' +
-              '<td>' + snap.AverageQuota + '</td>' +
-        '</tr>');
+        //   $('#tableBody').append(
+        //     '<tr>' +
+        //       '<td>' + snap.Name + '</td>' +
+        //       '<td>' + snap.Score1 + '</td>' + 
+        //       '<td>' + snap.Score2 + '</td>' +
+        //       '<td>' + snap.Score3 + '</td>' +
+        //       '<td>' + snap.Score4 + '</td>' +
+        //       '<td>' + snap.Score5 + '</td>' +
+        //       '<td>' + snap.Score6 + '</td>' +
+        //       '<td>' + snap.AverageQuota + '</td>' +
+        // '</tr>');
+
+          $('#golfTable').dataTable().fnAddData([
+                                                  snap.Name,
+                                                  snap.Score1,
+                                                  snap.Score2,
+                                                  snap.Score3,
+                                                  snap.Score4,
+                                                  snap.Score5,
+                                                  snap.Score6,
+                                                  snap.AverageQuota
+
+                                                ]);
       }
     }
     
@@ -425,6 +438,13 @@
           modalLogic(status);
       }
 
+    });
+
+    $('#golfTable_filter').on('blur', function(){
+        if($('#golfTable_filter').val() === ''){
+          location.reload();
+        }
+        
     });
 
     
