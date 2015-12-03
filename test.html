@@ -63,16 +63,21 @@
     </table>
   </div>
 
+  <br>
+  <br>
+  <br>
+  <br>
+
 
   <div id='buttonContainer'>
 
     <input type='button' id="add" data-toggle="modal" data-target="#golfModal" value='Add Golfers'/>
-    <br>
+    
     <input type='button' id="addScore" data-toggle="modal" value='Add Score'/>
-    <br>
+    
     <input type='button' id="edit" data-toggle="modal" value='Edit Golfers'/>
-    <br>
-    <input type='button' id="delete" data-toggle="modal" data-target="#deleteModal" value='Delete Golfers'>
+    
+    <input type='button' id="delete" data-toggle="modal" value='Delete Golfers'>
     
   </div>
 
@@ -121,10 +126,15 @@
       <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Delete Golfer</h4>
+                <h3 class="modal-title">Delete Golfer</h3>
             </div>
             <div class="modal-body">
-                <h4 class="modal-title">Are you sure you want to delete this golfer?</h4>
+                <h4 class="modal-title">Are you sure you want to delete this golfer?</h4><br>
+                <label for='deleteFirstName'>Golfers First Name</label><br>
+                <input type="text" class="form-control" id="deleteFirstName" placeholder="First Name"></input>
+                <hr class='hr'>
+                <label for='deleteLastName'>Golfers Last Name</label><br>
+                <input type="text" class="form-control" id="deleteLastName" placeholder="Last Name"></input>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -169,17 +179,22 @@
 }
 
 #buttonContainer{
-  /*margin-top: 15%;
-  margin-left: 15%;*/
- 
+  
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  /* bring your own prefixes */
+  transform: translate(-50%, -50%);
+  padding-top: 15%;
+
 }
 
 #add{
-  width: 7%;
+  width: 200px;
   border-radius: 10px;
   background-color: #76FF03;
   color: white;
-  height: 9%;
+  height: 50px;
 
 }
 
@@ -189,12 +204,12 @@
 }
 
 #addScore{
-  width: 7%;
+  width: 200px;
   border-radius: 10px;
   background-color: #03A9F4;
   color: white;
   
-  height: 9%;
+  height: 50px;
 
 }
 
@@ -204,12 +219,12 @@
 }
 
 #edit{
-  width: 7%;
+  width: 200px;
   border-radius: 10px;
   background-color: #FB8C00;
   color: white;
   
-  height: 9%;
+  height: 50px;
 
 }
 
@@ -219,11 +234,11 @@
 }
 
 #delete{
-  width: 7%;
+  width: 200px;
   border-radius: 10px;
   background-color: #F44336;
   color: white;
-  height: 9%;
+  height: 50px;
 
 }
 
@@ -403,6 +418,13 @@
       modalLogic(status);
     })
 
+    //runs when ever the modal gets shown
+    $('#deleteModal').on('shown.bs.modal', function () {
+      //$('#myInput').focus()
+      //console.log("HI");
+      modalLogic(status);
+    })
+
     //Jquery button click handler for when the Add button is clicked
     $('#addSave').click(function(){
       
@@ -438,6 +460,25 @@
           modalLogic(status);
       }
 
+    });
+
+    $('#delete').click(function(){
+      status = 4;
+      if(editData.length == 0 || editData === undefined || editData === ''){
+          $('#errorModal').modal('show');
+      }
+      else{
+          $('#deleteModal').modal('show');
+          //modalLogic(status);
+          
+      }
+
+    });
+
+    $('#deleteGolfer').click(function(){
+        var deleteCaseName = $('#deleteFirstName').val() + ' ' + $('#deleteLastName').val();
+        setData(status, myData, deleteCaseName, nameExists);
+        $('#deleteModal').modal('hide');
     });
 
     $('#golfTable_filter').on('blur', function(){
@@ -533,6 +574,27 @@
       }
       
     }
+    else if(modalStatus === 4){
+      //firebase code edit/update
+
+      if(doesThisExist(data)){
+        var key;
+        for(var i = 0; i < uniqueKey.length; i++){
+            if(data === uniqueKey[i].name){
+              key = uniqueKey[i].key;
+              break;
+            }
+        }
+        var ref = table + '/' + key + '/';
+        table = new Firebase(ref);
+        table.remove();
+        status = 0;
+        nameExists = '';
+        location.reload();
+      }
+    }
+      
+    
   }
 
     function getAddInputs(){
@@ -623,8 +685,17 @@
         $('#golferLastName').val(lname);
 
         nameExists = editName;
+      }
+      else if(modalStatus === 4){
+        $('#deleteFirstName').prop('readonly', true);
+        $('#deleteLastName').prop('readonly', true);
 
-
+        //split the fullname into first and last name
+        var editName = editData[0].Name,
+            fname    = editName.split(' ')[0],
+            lname    = editName.split(' ')[1];
+        $('#deleteFirstName').val(fname);
+        $('#deleteLastName').val(lname);
       }
 
     }
