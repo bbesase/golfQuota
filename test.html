@@ -179,7 +179,6 @@
   border-radius: 10px;
   background-color: #76FF03;
   color: white;
-  
   height: 9%;
 
 }
@@ -450,6 +449,7 @@
           });
 
           status = 0;
+          location.reload();
         }
       }
       else if(modalStatus === 2){
@@ -478,6 +478,7 @@
             
           });
           status = 0;
+          location.reload();
         }
       }
       else if(modalStatus === 3){
@@ -507,6 +508,7 @@
             });
           status = 0;
           nameExists = '';
+          location.reload();
         }
       }
       
@@ -546,6 +548,7 @@
     function modalLogic(modalStatus){
       if(modalStatus === 1){
         //code to config logic with status == add
+        $('#golferFirstName').focus();
       }
       else if(modalStatus === 2){
         //code to config logic with status == add score
@@ -604,6 +607,18 @@
 
       }
 
+    }
+
+    function doesThisExist(golferName){
+
+        for(var i = 0; i < uniqueKey.length; i++){
+            if(uniqueKey[i].name === golferName){
+              return true;
+            }
+        } 
+
+        return false;
+      
     }
 
   });
