@@ -63,16 +63,17 @@
     </table>
   </div>
 
+
   <div id='buttonContainer'>
 
-    <button id="add" data-toggle="modal" data-target="#golfModal">Add Golfer</button>
+    <input type='button' id="add" data-toggle="modal" data-target="#golfModal" value='Add Golfers'/>
     <br>
-    <button id="addScore" data-toggle="modal" >Add Score</button>
+    <input type='button' id="addScore" data-toggle="modal" value='Add Score'/>
     <br>
-    <button id="edit" data-toggle="modal">Edit Golfer</button>
+    <input type='button' id="edit" data-toggle="modal" value='Edit Golfers'/>
     <br>
-    <button id="delete" data-toggle="modal" data-target="#deleteModal">Delete Golfer</button>
-    <br>
+    <input type='button' id="delete" data-toggle="modal" data-target="#deleteModal" value='Delete Golfers'>
+    
   </div>
 
 
@@ -85,7 +86,7 @@
             <h4 class="modal-title">Add Golfer</h4>
           </div>
           <div class="modal-body">
-          <label for='golferFirstName'>Golfers First Name</label><br>
+            <label for='golferFirstName'>Golfers First Name</label><br>
             <input type="text" class="form-control" id="golferFirstName" placeholder="First Name"></input>
             <hr class='hr'>
             <label for='golferLastName'>Golfers Last Name</label><br>
@@ -97,9 +98,11 @@
               <input type="number" class='quotaInputs form-control' placeholder="Round 3" id="quota3" min='0'>
             </div>
             <hrclass='hr'>
+            <br>
+            <br>
             <div id='quotaBottomRow'>
               <input type="number" class='quotaInputs form-control' placeholder="Round 4" id="quota4" min='0'>
-              <input type="number" class='quotaInputs form-control' placeholder="Round 5" id="quota5" min='0'>
+              <input type="number" class='quotaInputs form-control' placeholder="Round 5" id="quota5" min='0'>           
               <input type="number" class='quotaInputs form-control' placeholder="Round 6" id="quota6" min='0'>
             </div>
 
@@ -168,7 +171,7 @@
 #buttonContainer{
   /*margin-top: 15%;
   margin-left: 15%;*/
-  overflow: hidden;
+ 
 }
 
 #add{
@@ -602,20 +605,6 @@
       }
 
     }
-
-    function doesThisExist(golferName){
-
-        for(var i = 0; i < uniqueKey.length; i++){
-            if(uniqueKey[i].name === golferName){
-              return true;
-            }
-        } 
-
-        return false;
-      
-    }
-
-    
 
   });
 </script>
